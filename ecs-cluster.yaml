@@ -10,7 +10,7 @@ Parameters:
   InstanceType:
     Description: Which instance type should we use to build the ECS cluster?
     Type: String
-    Default: c4.large
+    Default: t2.micro
 
   ClusterSize:
     Description: How many ECS hosts do you want to initially deploy?
@@ -220,7 +220,38 @@ Resources:
                 }
             }]
         }
+      # Cloud WatchFullAccess to give permissions for the CloudWatch Agent
       Policies:
+        - PolicyName: CloudWatchFullAccess
+          PolicyDocument: |
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Action": [
+                            "autoscaling:Describe*",
+                            "cloudwatch:*",
+                            "logs:*",
+                            "sns:*",
+                            "iam:GetPolicy",
+                            "iam:GetPolicyVersion",
+                            "iam:GetRole"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": "*"
+                    },
+                    {
+                        "Effect": "Allow",
+                        "Action": "iam:CreateServiceLinkedRole",
+                        "Resource": "arn:aws:iam::*:role/aws-service-role/events.amazonaws.com/AWSServiceRoleForCloudWatchEvents*",
+                        "Condition": {
+                            "StringLike": {
+                                "iam:AWSServiceName": "events.amazonaws.com"
+                            }
+                        }
+                    }
+                ]
+            }
         - PolicyName: ecs-service
           PolicyDocument: |
             {
@@ -279,6 +310,9 @@ Resources:
                 }]
             }
 
+  # InstanceProfile gibt eine IAM-Rolle an eine EC2-Instance. Hier geben wir die ECSRole
+  # So wird unter anderem sicher gestellt, dass alle EC2 Instanzen aus dem ECS Cluster CloudWatchFullAccess bekommen
+  # um den CLoudWatchAgent die permissions zu geben, die er braucht
   ECSInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:

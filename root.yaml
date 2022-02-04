@@ -13,6 +13,7 @@ Resources:
   VPC:
     Type: AWS::CloudFormation::Stack
     Properties:
+      # Alle TemplateURL ändern, zu meinen s3 buckets für die Templates die ich verändert habe.
       TemplateURL: https://s3.amazonaws.com/ecs-refarch-cloudformation/infrastructure/vpc.yaml
       Parameters:
         EnvironmentName: !Ref AWS::StackName

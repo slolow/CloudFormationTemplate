@@ -16,11 +16,7 @@ Parameters:
     Description: How many ECS hosts do you want to initially deploy?
     Type: Number
     Default: 4
-
-  VPC:
-    Description: Choose which VPC this ECS cluster should be deployed to
-    Type: AWS::EC2::VPC::Id
-
+    
   Subnets:
     Description: Choose which subnets this ECS cluster should be deployed to
     Type: List<AWS::EC2::Subnet::Id>
